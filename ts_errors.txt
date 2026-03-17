@@ -1,0 +1,8 @@
+src/config/configuration.ts(5,18): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/modules/auth/auth.module.ts(12,7): error TS2322: Type '(configService: ConfigService) => Promise<{ secret: string | undefined; signOptions: { expiresIn: string; }; }>' is not assignable to type '(...args: any[]) => JwtModuleOptions | Promise<JwtModuleOptions>'.
+  Type 'Promise<{ secret: string | undefined; signOptions: { expiresIn: string; }; }>' is not assignable to type 'JwtModuleOptions | Promise<JwtModuleOptions>'.
+    Type 'Promise<{ secret: string | undefined; signOptions: { expiresIn: string; }; }>' is not assignable to type 'Promise<JwtModuleOptions>'.
+      Type '{ secret: string | undefined; signOptions: { expiresIn: string; }; }' is not assignable to type 'JwtModuleOptions'.
+        The types of 'signOptions.expiresIn' are incompatible between these types.
+          Type 'string' is not assignable to type 'number | StringValue | undefined'.
