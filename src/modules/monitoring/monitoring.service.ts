@@ -4,7 +4,7 @@ import { Queue } from 'bullmq';
 
 @Injectable()
 export class MonitoringService {
-  constructor(@InjectQueue('task-queue') private readonly taskQueue: Queue) {}
+  constructor(@InjectQueue('tasks') private readonly taskQueue: Queue) {}
 
   async getQueueMetrics() {
     const [waiting, active, completed, failed, delayed] = await Promise.all([

@@ -5,7 +5,7 @@ import { JobProcessor } from './job.processor';
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: 'task-queue',
+      name: 'tasks',
     }),
   ],
   providers: [JobProcessor],

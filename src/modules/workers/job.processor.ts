@@ -2,7 +2,7 @@ import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { Logger } from '@nestjs/common';
 
-@Processor('task-queue')
+@Processor('tasks')
 export class JobProcessor extends WorkerHost {
   private readonly logger = new Logger(JobProcessor.name);
 

@@ -1,6 +1,8 @@
-import { Controller, Post, Get, Body, Param, UseGuards, NotFoundException } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, UseGuards, NotFoundException, HttpCode, HttpStatus } from '@nestjs/common';
 import { JobsService } from './jobs.service';
-import { CreateJobDto } from './dto/create-job.dto';
+import { EmailJobDto } from './dto/email-job.dto';
+import { VideoJobDto } from './dto/video-job.dto';
+import { AiJobDto } from './dto/ai-job.dto';
 import { AuthGuard } from '../auth/auth.guard';
 
 @UseGuards(AuthGuard)
@@ -8,9 +10,22 @@ import { AuthGuard } from '../auth/auth.guard';
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
-  @Post()
-  async create(@Body() createJobDto: CreateJobDto) {
-    return this.jobsService.createJob(createJobDto);
+  @Post('email')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async createEmailJob(@Body() emailJobDto: EmailJobDto) {
+    return this.jobsService.createJob('email', emailJobDto, emailJobDto);
+  }
+
+  @Post('video')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async createVideoJob(@Body() videoJobDto: VideoJobDto) {
+    return this.jobsService.createJob('video', videoJobDto, videoJobDto);
+  }
+
+  @Post('ai')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async createAiJob(@Body() aiJobDto: AiJobDto) {
+    return this.jobsService.createJob('ai', aiJobDto, aiJobDto);
   }
 
   @Get(':id')

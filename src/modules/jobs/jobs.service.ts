@@ -1,14 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
-import { CreateJobDto } from './dto/create-job.dto';
+import { Queue, JobsOptions } from 'bullmq';
+import { BaseJobDto } from './dto/base-job.dto';
 
 @Injectable()
 export class JobsService {
-  constructor(@InjectQueue('task-queue') private readonly taskQueue: Queue) {}
+  private readonly logger = new Logger(JobsService.name);
 
-  async createJob(createJobDto: CreateJobDto) {
-    const job = await this.taskQueue.add(createJobDto.type, createJobDto.payload);
+  constructor(@InjectQueue('tasks') private readonly taskQueue: Queue) {}
+
+  private extractOptions(dto: BaseJobDto): JobsOptions {
+    const options: JobsOptions = {};
+    if (dto.attempts !== undefined) options.attempts = dto.attempts;
+    if (dto.delay !== undefined) options.delay = dto.delay;
+    if (dto.backoff) {
+      options.backoff = {
+        type: dto.backoff.type || 'fixed',
+        delay: dto.backoff.delay || 0,
+      };
+    }
+    return options;
+  }
+
+  async createJob(type: string, payload: any, optionsDto?: BaseJobDto) {
+    const options = optionsDto ? this.extractOptions(optionsDto) : {};
+    const job = await this.taskQueue.add(type, payload, options);
+    
+    this.logger.log(`Created job ${job.id} of type "${type}"`, { payload, options });
+    
     return {
       jobId: job.id,
       name: job.name,

@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: 'task-queue',
+      name: 'tasks',
     }),
     AuthModule,
     ConfigModule,
