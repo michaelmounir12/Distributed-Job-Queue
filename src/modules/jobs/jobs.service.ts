@@ -28,11 +28,17 @@ export class JobsService {
     
     this.logger.log(`Created job ${job.id} of type "${type}"`, { payload, options });
     
-    return {
+    const response: any = {
       jobId: job.id,
       name: job.name,
       status: 'pending'
     };
+
+    if (options.delay) {
+      response.scheduledExecutionTime = new Date(Date.now() + options.delay).toISOString();
+    }
+    
+    return response;
   }
 
   async getJobStatus(id: string) {
@@ -40,10 +46,11 @@ export class JobsService {
     if (!job) return null;
     return {
       id: job.id,
-      state: await job.getState(),
+      status: await job.getState(),
       progress: job.progress,
+      attempts: job.attemptsMade,
       failedReason: job.failedReason,
-      returnvalue: job.returnvalue,
+      result: job.returnvalue,
     };
   }
 }
