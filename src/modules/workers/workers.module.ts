@@ -9,6 +9,15 @@ import { AiProcessorService } from './processors/ai.processor.service';
   imports: [
     BullModule.registerQueue({
       name: 'tasks',
+      defaultJobOptions: {
+        attempts: 5,
+        backoff: {
+          type: 'exponential',
+          delay: 2000,
+        },
+        removeOnComplete: true,
+        removeOnFail: false,
+      },
     }),
   ],
   providers: [

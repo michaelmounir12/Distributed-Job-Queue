@@ -9,6 +9,15 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     BullModule.registerQueue({
       name: 'tasks',
+      defaultJobOptions: {
+        attempts: 5,
+        backoff: {
+          type: 'exponential',
+          delay: 2000,
+        },
+        removeOnComplete: true,
+        removeOnFail: false, // Ensures failed jobs behave as dead-letters perpetually in Redis
+      },
     }),
     AuthModule,
     ConfigModule,

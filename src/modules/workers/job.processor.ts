@@ -1,4 +1,4 @@
-import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { Processor, WorkerHost, OnWorkerEvent } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { Logger } from '@nestjs/common';
 import { EmailProcessorService } from './processors/email.processor.service';
@@ -15,6 +15,26 @@ export class JobProcessor extends WorkerHost {
     private readonly aiProcessor: AiProcessorService,
   ) {
     super();
+  }
+
+  @OnWorkerEvent('active')
+  onActive(job: Job) {
+    this.logger.log(`Lifecycle: Starting job ${job.id} of type "${job.name}"`);
+  }
+
+  @OnWorkerEvent('progress')
+  onProgress(job: Job, progress: number | object) {
+    this.logger.debug(`Lifecycle: Job ${job.id} progress updated to ${progress}%`); // standard percentage
+  }
+
+  @OnWorkerEvent('completed')
+  onCompleted(job: Job, result: any) {
+    this.logger.log(`Lifecycle: Successfully completed job ${job.id}`);
+  }
+
+  @OnWorkerEvent('failed')
+  onFailed(job: Job, error: Error) {
+    this.logger.error(`Lifecycle: Job ${job.id} failed with reason: ${error.message} - Automatic retry mechanisms will execute based strictly on the backoff strategy mapped in Redis.`);
   }
 
   async process(job: Job<any, any, string>): Promise<any> {
