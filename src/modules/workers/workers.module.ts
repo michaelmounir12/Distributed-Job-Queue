@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { JobProcessor } from './job.processor';
+import { EmailProcessorService } from './processors/email.processor.service';
+import { VideoProcessorService } from './processors/video.processor.service';
+import { AiProcessorService } from './processors/ai.processor.service';
 
 @Module({
   imports: [
@@ -8,6 +11,11 @@ import { JobProcessor } from './job.processor';
       name: 'tasks',
     }),
   ],
-  providers: [JobProcessor],
+  providers: [
+    JobProcessor,
+    EmailProcessorService,
+    VideoProcessorService,
+    AiProcessorService,
+  ],
 })
 export class WorkersModule {}
