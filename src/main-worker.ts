@@ -1,13 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { WorkerAppModule } from './worker-app.module';
-import { Logger } from '@nestjs/common';
+import { Logger } from 'nestjs-pino';
 
 async function bootstrap() {
-  const logger = new Logger('WorkerBootstrap');
-  // Create an application context without booting the HTTP server
-  const app = await NestFactory.createApplicationContext(WorkerAppModule);
+  const app = await NestFactory.createApplicationContext(WorkerAppModule, { bufferLogs: true });
   
+  app.useLogger(app.get(Logger));
+
+  // Handle explicit microservice graceful tear-downs locally (SIGTERM mapping)
   app.enableShutdownHooks();
-  logger.log('Standalone Worker Application is running and listening for jobs...');
+
+  const logger = app.get(Logger);
+  logger.log('Standalone Worker Application initialized and routing payloads headless.');
 }
 bootstrap();

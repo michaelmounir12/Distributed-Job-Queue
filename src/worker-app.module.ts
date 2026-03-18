@@ -1,11 +1,20 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
+import { LoggerModule } from 'nestjs-pino';
 import { redisConfig } from './config/configuration';
 import { WorkersModule } from './modules/workers/workers.module';
 
 @Module({
   imports: [
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport: {
+          target: 'pino-pretty',
+          options: { singleLine: true },
+        },
+      },
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [redisConfig],
@@ -16,11 +25,14 @@ import { WorkersModule } from './modules/workers/workers.module';
         connection: {
           host: configService.get('redis.host'),
           port: configService.get('redis.port'),
+          maxRetriesPerRequest: null,
+          enableReadyCheck: false,
+          retryStrategy: (times) => Math.min(times * 100, 3000), // Stable connection retries for workers
         },
       }),
       inject: [ConfigService],
     }),
-    WorkersModule, // The standalone application only loads this functional slice
+    WorkersModule,
   ],
 })
 export class WorkerAppModule {}
